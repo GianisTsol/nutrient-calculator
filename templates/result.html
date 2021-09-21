@@ -2,9 +2,15 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
+    <link rel="stylesheet" href='static/css/result.css'>
     <title></title>
   </head>
   <body>
-    {{ responses[key] }}
+    {% for food in foods %}
+    <div id="panel">
+      <img src="static/images/{{ food['image'] }}"/>
+      <span>{{ food['name'] }} x{{ food['qtty'] }}</span>
+    </div>
+    {% endfor %}
   </body>
 </html>

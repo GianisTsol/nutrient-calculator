@@ -1,205 +1,40 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-.dropbtn {
-  background-color: #04AA6D;
-  color: white;
-  padding: 16px;
-  font-size: 16px;
-  border-radius: 4px;
-  border: none;
-  cursor: pointer;
-}
 
-.dropbtn:hover, .dropbtn:focus {
-  background-color: #3e8e41;
-}
-
-#myInput {
-  box-sizing: border-box;
-  background-image: url('static/searchicon.png');
-  background-position: 14px 12px;
-  background-repeat: no-repeat;
-  font-size: 16px;
-  padding: 14px 20px 12px 45px;
-  border: none;
-  border-bottom: 1px solid #ddd;
-}
-
-#myInput:focus {outline: 3px solid #ddd;}
-
-.dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-.dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: #f6f6f6;
-  min-width: 230px;
-  overflow: scroll;
-  border: 1px solid #ddd;
-  z-index: 1;
-  height: 400px;
-  max-height: 800px;
-}
-
-.dropdown-content a {
-  color: black;
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
-}
-
-.InputFields {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  margin-top: 30px;
-  margin-bottom: 10px;
-}
-
-.InputFields h2{
-  display: block;
-  font-size: 16px;
-}
-
-.delete-btn {
-    display: inline-block;
-}
-
-
-.param-input {
-    display: inline-block;
-    margin-bottom: 10px;
-}
-.dropdown a:hover {background-color: #ddd;}
-
-.show {display: block;}
-
-.center {
-  margin: auto;
-  width: 50%;
-  border: 3px solid green;
-  padding: 10px;
-  text-align: center;
-}
-
-.num-input{
-
-  border-radius: 4px;
-  border: solid;
-  background-color: rgba(201, 138, 255, 0.5);
-  margin: 10px;
-  display: block;
-}
-</style>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="static/css/main.css">
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+   <script src="static/js/main.js"></script>
 </head>
 <body>
 
+
 <div class="center">
-<h1>Diet Nutrient Calculator</h1>
-  <div class="InputFields" id="inputs">
-  <div id="input-default" style="display:none" class="num-input">
-  <h2>NAME</h2>
-  <button onclick="deleteParam()" class="delete-btn">X</button>
-  <input type="number" class="param-input">
-  </div>
+
+    <h1>Diet Nutrient Calculator</h1>
+      <div class="InputFields" id="inputs">
+      <div id="input-default" style="display:none" class="num-input">
+        <h2>NAME</h2>
+        <button class="delete-btn">X</button>
+        <input type="text" class="param-input" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');">
+      </div>
+    </div>
+
+    <div class="dropdown">
+      <button onclick="ToggleDropdown()" class="dropbtn">Dropdown</button>
+      <div id="myDropdown" class="dropdown-content">
+        <input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()" style="position: relative;">
+        {% for i in tags %}
+          <a href="#" id="option-{{ tags.index(i) }}" onclick="addParam({{ tags.index(i) }})">{{ i }}</a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <button onclick="sendParams()" class="dropbtn">Submit</button>
+
 </div>
 
-<div class="dropdown">
-  <button onclick="myFunction()" class="dropbtn">Dropdown</button>
-  <div id="myDropdown" class="dropdown-content">
-    <input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()" style="position: relative;">
-    {% for i in tags %}
-    <a href="#" id="option-{{ tags.index(i) }}" onclick="addParam({{ tags.index(i) }})">{{ i }}</a>
-    {% endfor %}
-  </div>
-</div>
-
-<button onclick="sendParams()" class="dropbtn">Submit</button>
-
-</div>
-<script>
-  var formData = new FormData(); // Currently empty
-  var inputdiv = document.getElementById("inputs");
-  var demofield = document.getElementById("input-default");
-  var paramlist = document.getElementById("myDropdown");
-
-  function addParam(id){
-    var element =  document.getElementById(`input-${id}`);
-    if (element == null)
-    {
-      formData.append(id, 0);
-      var tmp = demofield.cloneNode(true);
-      tmp.setAttribute("style", "display:block;");
-      tmp.setAttribute("id", `input-${id}`);
-      tmp.setAttribute("__item", id);
-      tmp.children[1].setAttribute("onClick", `deleteParam(${id})`);
-      tmp.children[0].innerHTML = paramlist.children[id+1].innerHTML;
-      inputdiv.appendChild(tmp);
-    }
-  }
-
-  function deleteParam(id){
-    var obj = document.getElementById(`input-${id}`);
-    obj.remove();
-    formData.delete(id);
-  }
-
-  function setValue(id, value){
-    formData.set(id, value);
-  }
-
-  function sendParams(){
-    var children = Array.from(inputdiv.children);
-    children.forEach(function(i) {
-      if (i.getAttribute("__item") != null){
-        setValue(i.getAttribute("__item"), i.children[2].value);
-      }
-    });
-
-    formData.append("file", photo);
-
-    var request = new XMLHttpRequest();
-    request.open("POST", "/data");
-    request.send(formData);
-
-    request.onreadystatechange = function() {
-    if (request.readyState == XMLHttpRequest.DONE) {
-        var resp = request.responseText
-        window.location = '/result?id='+resp;
-    }
-}
-
-  }
-</script>
-
-<script>
-/* When the user clicks on the button,
-toggle between hiding and showing the dropdown content */
-function myFunction() {
-  document.getElementById("myDropdown").classList.toggle("show");
-}
-
-function filterFunction() {
-  var input, filter, ul, li, a, i;
-  input = document.getElementById("myInput");
-  filter = input.value.toUpperCase();
-  div = document.getElementById("myDropdown");
-  a = div.getElementsByTagName("a");
-  for (i = 0; i < a.length; i++) {
-    txtValue = a[i].textContent || a[i].innerText;
-    if (txtValue.toUpperCase().indexOf(filter) > -1) {
-      a[i].style.display = "";
-    } else {
-      a[i].style.display = "none";
-    }
-  }
-}
-</script>
 
 </body>
 </html>
