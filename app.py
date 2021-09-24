@@ -10,39 +10,111 @@ app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = "static/images"
 
 nutrients = [
-    "Πρωτεινες",
-    "Υδατανθρακες",
-    "Λιπαρα",
-    "Αλκοολη",
-    "Ψευδάργυρος",
-    "Μαγγάνιο",
-    "Σελήνιο",
-    "Ιώδιο",
-    "Ασβέστιο",
-    "Φώσφορο",
-    "Μαγνήσιο",
-    "Σίδηρος",
-    "Χαλκός",
-    "Βιταμίνη Α ,Βιταμίνη D",
-    "Βιταμίνη Ε",
-    "Βιταμίνη Κ",
-    "Βιταμίνη C",
-    "Βιταμίνη Β1 - θειαμίνη",
-    "Βιταμίνη Β2 - ριβοφλαβίνη",
-    "Βιταμίνη Β3 - νιασίνη",
-    "Βιταμίνη Β5- παντοθενικό οξύ",
-    "Βιταμίνη Β6- πυριδοξίνη",
-    "Βιταμίνη Β7- βιοτίνη",
-    "Βιταμίνη Β9-Φυλλικό",
-    "Βιταμίνη Β12",
-    "Νατριο",
-    "χρωμιο",
-    "καλιο",
-    "θερμιδες",
-    "φυτικες ινες",
-    "ω-3",
-    "ω-6",
+    "Protein",
+    "Fat",
+    "netcarbs",
+    "sugar",
+    "fiber",
+    "saturated fat",
+    "calcium",
+    "iron",
+    "potassium K",
+    "magnesium",
+    "Phosphorous",
+    "sodium",
+    "zinc",
+    "copper",
+    "manganese",
+    "selenium",
+    "Fluorid",
+    "Iodine",
+    "Chromium",
+    "A RAE",
+    "C",
+    "ThiaminB1",
+    "riboflavinB2",
+    "niacinB3",
+    "B5",
+    "B6",
+    "biotin",
+    "folateB9",
+    "Folic acid",
+    "food folate",
+    "folate DFE",
+    "Choline",
+    "B12",
+    "Retinol",
+    "carotene beta",
+    "carotene alpha",
+    "cryptoxanthin beta",
+    "A IU",
+    "Lucopene",
+    "Lut+Zeaxanthin",
+    "E",
+    "D",
+    "DIU",
+    "D2",
+    "D3",
+    "K",
+    "Menaquinone",
+    "omega3",
+    "omega6",
 ]
+
+sizes = [
+    "g",
+    "g",
+    "g",
+    "g",
+    "g",
+    "g",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+    "mg",
+]
+
+nutrients = [i.capitalize() for i in nutrients]
+
 responses = []
 foods = []
 
@@ -53,20 +125,17 @@ calc = Calculator()
 
 
 def response_to_list(r):
-    r = dict(r)
     buf = []
     new = {}
     for i in r.keys():
         try:
-            int(i)
-            new[i] = r[i]
+            new[int(i)] = r[i]
         except ValueError:
             pass
-    r = new
-    for i in r.keys():
-        while int(i) > len(buf):
+    for i in new.keys():
+        while i >= len(buf):
             buf.append(0)
-        buf.append(r[i])
+        buf[i] = new[i]
     return buf
 
 
@@ -88,7 +157,9 @@ def data():
     if len(responses) > 60:
         responses = []
     key = len(responses)
-    responses.append(calc.calculate(response_to_list(form_data)))
+    nuts = response_to_list(form_data)
+    responses.append(calc.calculate(nuts))
+    responses[key]["query"] = [i for i in zip(nutrients, nuts) if i[1] != 0]
     return str(key)
 
 
@@ -102,7 +173,12 @@ def result():
         i["qtty"] = foods.count(i)
     foods = [i for n, i in enumerate(foods) if i not in foods[n + 1 :]]
 
-    return render_template("result.html", nuts=resp["nutrients"], foods=foods)
+    return render_template(
+        "result.html",
+        nuts=list(zip(nutrients, resp["nutrients"])),
+        foods=foods,
+        query=resp["query"],
+    )
 
 
 @app.route("/addfood", methods=["POST", "GET"])

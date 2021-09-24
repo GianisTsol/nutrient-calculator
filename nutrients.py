@@ -1,7 +1,5 @@
 import itertools
-from difflib import SequenceMatcher
-import json
-from json import JSONEncoder
+from functools import lru_cache
 
 
 class Calculator:
@@ -19,7 +17,7 @@ class Calculator:
             for j in range(len(i["nuts"])):
                 if len(buf) <= j:
                     buf.append(0)
-                buf[j] += int(i["nuts"][j])
+                buf[j] += round(float(i["nuts"][j]), 2)
 
         return buf
 
@@ -28,31 +26,31 @@ class Calculator:
         if len(combo) == 0:
             score = -100000000
 
-        for i in list(zip(self.get_nuts(combo), nuts)):
-            score -= abs(int(i[1]) - i[0])
+        for i in zip(self.get_nuts(combo), nuts):
+            if int(i[1]) >= 1:
+                score += abs(float(i[1]) - i[0])
         return score
 
     def calculate(self, want_nuts):
         foods = self.foods
         new = []
         for i in foods:
-            for j in range(0, i["limit"]):
+            for j in range(i["limit"]):
                 new.append(i)
-
         foods = new
-
-        new = []
-        for L in range(0, len(foods) + 1):
-            for subset in itertools.combinations(foods, L):
-                new.append(list(subset))
 
         best = -10000
         result = []
-        for i in new:
-            if (f := self.check_combo(i, want_nuts)) > best:
-                result = i
-                best = f
+        for i in range(1, len(foods) + 1):
+            for subset in itertools.combinations(foods, i):
+                f = 0 - self.check_combo(subset, want_nuts)
+                if f > best:
+                    result = list(subset)
+                    best = f
+                    if best == 0.0:
+                        break
 
         result.sort(key=lambda x: x["name"])
+        print(result)
 
         return {"foods": result, "nutrients": self.get_nuts(result)}

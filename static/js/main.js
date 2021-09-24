@@ -31,18 +31,21 @@ function sendParams(){
   var children = $('#inputs').children();
   children.each(function(i) {
     if ($(this).attr("__item") != null){
+      console.log("AAAAAA");
       setValue($(this).attr("__item"), $(this).children("input").first().val());
     }
   });
 
+  $("#myDropdown").hide();
 
+  console.log("AAAAsgfdfAA");
   var request = new XMLHttpRequest();
   request.open("POST", "/data");
   request.send(formData);
-
+  console.log("AAAAgfhdfghAA");
   request.onreadystatechange = function() {
   if (request.readyState == XMLHttpRequest.DONE) {
-      var resp = request.responseText
+      var resp = request.responseText;
       window.location = '/result?id='+resp;
   }
 
@@ -50,10 +53,12 @@ function sendParams(){
 
 }
 
+
+
 /* When the user clicks on the button,
 toggle between hiding and showing the dropdown content */
 function ToggleDropdown() {
-document.getElementById("myDropdown").classList.toggle("show");
+$("#myDropdown").toggle();
 }
 
 function filterFunction() {

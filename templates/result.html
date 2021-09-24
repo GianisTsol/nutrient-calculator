@@ -6,11 +6,34 @@
     <title></title>
   </head>
   <body>
+    Best match for:
+    <ul>
+      {% for n in query %}
+      <li>
+          <span class="qname">{{ n[0] }}:</span>
+          <span class="qval">{{ n[1] }}</span>
+      </li>
+      {% endfor %}
+    </ul>
     {% for food in foods %}
     <div id="panel">
       <img src="static/images/{{ food['image'] }}"/>
       <span>{{ food['name'] }} x{{ food['qtty'] }}</span>
     </div>
     {% endfor %}
+
+    <h2>Nutritional data</h2>
+    <table>
+      <tr>
+        <th>Nutrients</th>
+        <th>Value</th>
+      </tr>
+      {% for n in nuts %}
+      <tr>
+          <td>{{ n[0] }}</td>
+          <td>{{ n[1] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
   </body>
 </html>
