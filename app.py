@@ -1,5 +1,5 @@
 import json
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 from nutrients import Calculator
 from decouple import config
 import os
@@ -167,7 +167,10 @@ def data():
 def result():
     global responses
     data = request.args
-    resp = responses[int(data["id"])]
+    try:
+        resp = responses[int(data["id"])]
+    except ValueError:
+        return redirect(url_for("index"))
     foods = resp["foods"]
     for i in foods:
         i["qtty"] = foods.count(i)

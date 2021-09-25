@@ -1,5 +1,6 @@
 import itertools
 from functools import lru_cache
+from dataclasses import dataclass
 
 
 class Calculator:
@@ -17,14 +18,12 @@ class Calculator:
             for j in range(len(i["nuts"])):
                 if len(buf) <= j:
                     buf.append(0)
-                buf[j] += round(float(i["nuts"][j]), 2)
+                buf[j] += float(i["nuts"][j])
 
         return buf
 
     def check_combo(self, combo, nuts):
         score = 0
-        if len(combo) == 0:
-            score = -100000000
 
         for i in zip(self.get_nuts(combo), nuts):
             if int(i[1]) >= 1:
@@ -33,6 +32,7 @@ class Calculator:
 
     def calculate(self, want_nuts):
         foods = self.foods
+
         new = []
         for i in foods:
             for j in range(i["limit"]):
@@ -41,15 +41,17 @@ class Calculator:
 
         best = -10000
         result = []
-        for i in range(1, len(foods) + 1):
+
+        for i in range(3, 9):
             for subset in itertools.combinations(foods, i):
                 f = 0 - self.check_combo(subset, want_nuts)
                 if f > best:
-                    result = list(subset)
+                    result = subset
                     best = f
                     if best == 0.0:
                         break
 
+        result = list(result)
         result.sort(key=lambda x: x["name"])
         print(result)
 
