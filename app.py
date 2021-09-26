@@ -68,7 +68,7 @@ sizes = [
     "g",
     "g",
     "g",
-    "mg",
+    "g",
     "mg",
     "mg",
     "mg",
@@ -147,7 +147,7 @@ with open("foods.json", "r") as f:
 @app.route("/")
 @app.route("/index")
 def index():
-    return render_template("index.html", tags=nutrients)
+    return render_template("index.html", tags=nutrients, sizes=sizes)
 
 
 @app.route("/data", methods=["POST", "GET"])
@@ -158,6 +158,8 @@ def data():
         responses = []
     key = len(responses)
     nuts = response_to_list(form_data)
+    if len(nuts) < 1:
+        return "INVALID"
     responses.append(calc.calculate(nuts))
     responses[key]["query"] = [i for i in zip(nutrients, nuts) if i[1] != 0]
     return str(key)
@@ -215,4 +217,6 @@ def addfood():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port="5000")
+    app.jinja_env.auto_reload = True
+    app.config["TEMPLATES_AUTO_RELOAD"] = True
+    app.run(debug=True, host="0.0.0.0", port=5000)

@@ -1,5 +1,7 @@
 var formData = new FormData(); // Currently empty
 
+$("#loader").hide();
+
 function addParam(id){
   var element = $(`#input-${id}`);
   if (element.length == 0)
@@ -13,7 +15,8 @@ function addParam(id){
       deleteParam(id);
     });
     $tmp.children("h2").first().text($(`#option-${id}`).text());
-    $tmp.appendTo($('#inputs'))
+    $tmp.insertBefore($('#drop'));
+    $("#myDropdown").hide();
   }
 }
 
@@ -29,20 +32,34 @@ function setValue(id, value){
 
 function sendParams(){
   var children = $('#inputs').children();
+  var error = false;
+  console.log($('#inputs').children().length);
+  if ($('#inputs').children().length < 3){
+    $("#notification").text("Add atleast one element.");
+    $("#notification").show();
+    return false;
+  }
   children.each(function(i) {
     if ($(this).attr("__item") != null){
-      console.log("AAAAAA");
+      if ($(this).children("input").first().val() == ""){
+        $("#notification").text("Please fill in all of the values.");
+        $("#notification").show();
+        error = true;
+        return false;
+      }
       setValue($(this).attr("__item"), $(this).children("input").first().val());
     }
   });
 
+  if (error){
+    return false;
+  }
   $("#myDropdown").hide();
 
-  console.log("AAAAsgfdfAA");
   var request = new XMLHttpRequest();
   request.open("POST", "/data");
   request.send(formData);
-  console.log("AAAAgfhdfghAA");
+  $("#loader").show();
   request.onreadystatechange = function() {
   if (request.readyState == XMLHttpRequest.DONE) {
       var resp = request.responseText;
