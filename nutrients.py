@@ -26,28 +26,19 @@ class Calculator:
         score = 0
 
         for i in zip(self.get_nuts(combo), nuts):
-            if int(i[1]) >= 1:
+            if float(i[1]) >= 1:
                 score += abs(float(i[1]) - i[0])
         return score
 
     def calculate(self, want_nuts):
-        foods = self.foods
-
-        new = []
-        for i in foods:
-            for j in range(i["limit"]):
-                new.append(i)
-        foods = new
-
-        best = -10000
-        result = []
+        foods = [i for i in self.foods for j in range(i["limit"])]
+        result, best = [], -10000
 
         for i in range(3, 9):
             for subset in itertools.combinations(foods, i):
                 f = 0 - self.check_combo(subset, want_nuts)
                 if f > best:
-                    result = subset
-                    best = f
+                    result, best = subset, f
                     if best == 0.0:
                         break
 

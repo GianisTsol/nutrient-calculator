@@ -31,7 +31,7 @@
       {% for n in nuts %}
       <tr>
           <td>{{ n[0] }}</td>
-          <td>{{ n[1] }}</td>
+          <td>{{ n[1]|round(1) }}</td>
       </tr>
       {% endfor %}
     </table>

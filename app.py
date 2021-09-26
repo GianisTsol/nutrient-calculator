@@ -169,7 +169,7 @@ def result():
     data = request.args
     try:
         resp = responses[int(data["id"])]
-    except ValueError:
+    except (ValueError, IndexError):
         return redirect(url_for("index"))
     foods = resp["foods"]
     for i in foods:
