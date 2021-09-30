@@ -39,3 +39,12 @@ th{
 span.qval{
   font-weight: bold;
 }
+
+.info{
+  display: block;
+}
+
+.qlist{
+  margin-top: -1px;
+  margin-bottom: 20px;
+}

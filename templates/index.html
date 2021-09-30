@@ -7,23 +7,18 @@
   <link rel="stylesheet" href="static/css/common.css">
    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
    <script defer src="static/js/main.js"></script>
+ <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+ <title>Diet Nutrient Calculator</title>
+ <style>
+   body {
+     font-family: 'Roboto', sans-serif;
+   }
+ </style>
 </head>
 <body>
 
-  <div class="header">
-    <div class="row">
-      <h1>Diet Nutrient Calculator</h1>
-      <div class="col-3 menu">
-        <ul>
-          <li><a class="opt" href="index">Home</a></li>
-          <li><a class="opt" href="about">About</a></li>
-        </ul>
-      </div>
-    </div>
-  </div>
-
 <div class="center">
-
+      <h2>Diet Nutrient Calculator</h2>
       <span id="notification"></span>
       <div class="InputFields" id="inputs">
       <div id="input-default" style="display:none" class="num-input">
@@ -44,6 +39,7 @@
 
 
     <button onclick="sendParams()" class="subbtn">Submit</button><div id="loader"></div>
+    <h3 id="xd">Please wait... processing power doesnt grow on trees...</h3>
 
 </div>
 

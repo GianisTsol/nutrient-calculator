@@ -4,23 +4,19 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="static/css/common.css">
     <link rel="stylesheet" href='static/css/result.css'>
-    <title></title>
+    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+    <style>
+      body {
+        font-family: 'Roboto', sans-serif;
+      }
+    </style>
+    <title>Results</title>
   </head>
   <body>
-    <div class="header">
-      <div class="row">
-        <h1>Diet Nutrient Calculator</h1>
-        <div class="col-3 menu">
-          <ul>
-            <li><a class="opt" href="index">Home</a></li>
-            <li><a class="opt" href="about">About</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
+    <span class="info">Finished in <span><span class="qval">{{ time }}s</span>
 
-    Best match for:
-    <ul>
+    <span class="info">Best match for:</span>
+    <ul class="qlist">
       {% for n in query %}
       <li>
           <span class="qname">{{ n[0] }}:</span>

@@ -1,6 +1,5 @@
 import itertools
-from functools import lru_cache
-from dataclasses import dataclass
+import time
 
 
 class Calculator:
@@ -10,6 +9,8 @@ class Calculator:
     def load_foods(self, f):
         self.foods = []
         for i in f:
+            for j in i["nuts"]:
+                j = j * i["mult"]
             self.foods.append(i)
 
     def get_nuts(self, combo):
@@ -30,20 +31,28 @@ class Calculator:
                 score += abs(float(i[1]) - i[0])
         return score
 
-    def calculate(self, want_nuts):
+    def find_best(self, wants):
         foods = [i for i in self.foods for j in range(i["limit"])]
         result, best = [], -10000
 
         for i in range(3, 9):
             for subset in itertools.combinations(foods, i):
-                f = 0 - self.check_combo(subset, want_nuts)
+                f = 0 - self.check_combo(subset, wants)
                 if f > best:
                     result, best = subset, f
-                    if best == 0.0:
-                        break
+                    print(f)
+                    if best > -1.5:
+                        return list(result)
+        return list(result)
 
-        result = list(result)
+    def calculate(self, want_nuts):
+        start = time.time()
+
+        result = self.find_best(want_nuts)
         result.sort(key=lambda x: x["name"])
-        print(result)
 
-        return {"foods": result, "nutrients": self.get_nuts(result)}
+        return {
+            "foods": result,
+            "nutrients": self.get_nuts(result),
+            "time": round(time.time() - start, 2),
+        }

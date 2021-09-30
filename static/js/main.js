@@ -1,6 +1,7 @@
 var formData = new FormData(); // Currently empty
 
 $("#loader").hide();
+$("#xd").hide();
 
 function addParam(id){
   var element = $(`#input-${id}`);
@@ -60,6 +61,7 @@ function sendParams(){
   request.open("POST", "/data");
   request.send(formData);
   $("#loader").show();
+  $("#xd").show();
   request.onreadystatechange = function() {
   if (request.readyState == XMLHttpRequest.DONE) {
       var resp = request.responseText;

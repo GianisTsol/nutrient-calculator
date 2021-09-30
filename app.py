@@ -4,7 +4,6 @@ from nutrients import Calculator
 from decouple import config
 import os
 
-
 app = Flask(__name__)
 
 app.config["UPLOAD_FOLDER"] = "static/images"
@@ -183,6 +182,7 @@ def result():
         nuts=list(zip(nutrients, resp["nutrients"])),
         foods=foods,
         query=resp["query"],
+        time=resp["time"],
     )
 
 
