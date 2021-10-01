@@ -110,6 +110,7 @@ sizes = [
     "mg",
     "mg",
     "mg",
+    "mg",
 ]
 
 nutrients = [i.capitalize() for i in nutrients]
