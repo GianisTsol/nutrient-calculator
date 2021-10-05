@@ -1,25 +1,24 @@
 import itertools
 import time
+import numpy as np
 
 
 class Calculator:
     def __init__(self):
         self.foods = []
+        self.nutrient_size = 0
 
     def load_foods(self, f):
         self.foods = []
         for i in f:
-            for j in i["nuts"]:
-                j = j * i["mult"]
+            i["nuts"] = np.float32(i["nuts"]).dot(i["mult"])
             self.foods.append(i)
+        self.nutrient_size = len(self.foods[0]["nuts"])
 
     def get_nuts(self, combo):
-        buf = []
+        buf = np.zeros(self.nutrient_size, dtype=np.float32)
         for i in combo:
-            for j in range(len(i["nuts"])):
-                if len(buf) <= j:
-                    buf.append(0)
-                buf[j] += float(i["nuts"][j])
+            buf = np.add(i["nuts"], buf)  # Add food nuts to buffer
 
         return buf
 
@@ -27,21 +26,20 @@ class Calculator:
         score = 0
 
         for i in zip(self.get_nuts(combo), nuts):
-            if float(i[1]) >= 1:
-                score += abs(float(i[1]) - i[0])
+            if i[1] >= 1:
+                score += abs(i[1] - i[0])
         return score
 
     def find_best(self, wants):
         foods = [i for i in self.foods for j in range(i["limit"])]
-        result, best = [], -10000
+        result, best = [], -100
 
-        for i in range(3, 9):
+        for i in range(3, 10):
             for subset in itertools.combinations(foods, i):
                 f = 0 - self.check_combo(subset, wants)
                 if f > best:
                     result, best = subset, f
-                    print(f)
-                    if best > -1.5:
+                    if best > -2:
                         return list(result)
         return list(result)
 
@@ -54,5 +52,5 @@ class Calculator:
         return {
             "foods": result,
             "nutrients": self.get_nuts(result),
-            "time": round(time.time() - start, 2),
+            "time": round(time.time() - start, 4),
         }

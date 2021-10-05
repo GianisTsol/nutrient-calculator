@@ -1,7 +1,12 @@
 var formData = new FormData(); // Currently empty
+var values = {};
+
 
 $("#loader").hide();
 $("#xd").hide();
+$('#adv').click(function() {
+    $("#opts").toggle(this.checked);
+});
 
 function addParam(id){
   var element = $(`#input-${id}`);
@@ -28,7 +33,7 @@ function deleteParam(id){
 }
 
 function setValue(id, value){
-  formData.set(id, value);
+  values[id] = value;
 }
 
 function sendParams(){
@@ -48,7 +53,7 @@ function sendParams(){
         error = true;
         return false;
       }
-      setValue($(this).attr("__item"), $(this).children("input").first().val());
+      setValue($(this).attr("__item"), parseInt($(this).children("input").first().val())+1);
     }
   });
 
@@ -57,6 +62,7 @@ function sendParams(){
   }
   $("#myDropdown").hide();
 
+  formData.set("values", JSON.stringify(values));
   var request = new XMLHttpRequest();
   request.open("POST", "/data");
   request.send(formData);

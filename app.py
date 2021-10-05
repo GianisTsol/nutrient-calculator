@@ -135,7 +135,7 @@ def response_to_list(r):
     for i in new.keys():
         while i >= len(buf):
             buf.append(0)
-        buf[i] = new[i]
+        buf[i] = int(new[i])
     return buf
 
 
@@ -153,7 +153,7 @@ def index():
 @app.route("/data", methods=["POST", "GET"])
 def data():
     global responses
-    form_data = request.form
+    form_data = json.loads(request.form["values"])
     if len(responses) > 60:
         responses = []
     key = len(responses)
@@ -161,7 +161,9 @@ def data():
     if len(nuts) < 1:
         return "INVALID"
     responses.append(calc.calculate(nuts))
-    responses[key]["query"] = [i for i in zip(nutrients, nuts) if i[1] != 0]
+    responses[key]["query"] = [
+        (i[0], i[1] - 1) for i in zip(nutrients, nuts) if i[1] != 0
+    ]
     return str(key)
 
 
