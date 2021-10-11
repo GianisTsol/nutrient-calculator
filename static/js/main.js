@@ -1,9 +1,15 @@
 var formData = new FormData(); // Currently empty
 var values = {};
+var except = [];
+var include = [];
+var food_context = 0;
 
 
 $("#loader").hide();
-$("#xd").hide();
+
+
+$('#adv').prop('checked', false);
+
 $('#adv').click(function() {
     $("#opts").toggle(this.checked);
 });
@@ -63,6 +69,7 @@ function sendParams(){
   $("#myDropdown").hide();
 
   formData.set("values", JSON.stringify(values));
+  formData.set("except", JSON.stringify(except));
   var request = new XMLHttpRequest();
   request.open("POST", "/data");
   request.send(formData);
@@ -78,8 +85,78 @@ function sendParams(){
 
 }
 
+function ToggleFoodDropdown(ctx) {
+  $("#food-dropdown").toggle();
+  food_context = ctx;
+  console.log(food_context);
+}
+
+function deleteFood(id, ctx){
+  var obj = $(`#${getPrefix()}-food-${Number(id)}`);
+  switch (food_context) {
+    case 0:
+      var index = except.indexOf(id);
+      if (index !== -1) {
+        except.splice(index, 1);
+      }
+      break;
+
+    case 1:
+      var index = include.indexOf(id);
+      if (index !== -1) {
+        include.splice(index, 1);
+      }
+      break;
+  }
+
+  obj.remove();
+}
+
+function getPrefix() {
+  var prefix = "";
+  switch (food_context) {
+    case 0:
+      prefix = "ex";
+      break;
+
+    case 1:
+      prefix = "in";
+      break;
+  }
+  return prefix;
+}
 
 
+function addFood(id) {
+  var prefix = getPrefix();
+  var optid = `${prefix}-food-${id}`;
+
+  if ($("#" + optid).length == 0) {
+    var $tmp = $("#food-default").clone(true);
+    $tmp.attr("style", "display:block;");
+    $tmp.attr("__item", id);
+    $tmp.children("button").first().click(function(){
+      deleteFood(id, food_context);
+    });
+    $tmp.children("h2").first().text($(`#food-${id}`).text());
+    $tmp.attr("id", optid);
+    $(`#${prefix}-foods`).prepend($tmp);
+  }
+
+  switch (food_context) {
+    case 0:
+      except.push(id);
+      break;
+
+    case 1:
+      include.push(id);
+      break;
+  }
+
+  $("#food-dropdown").hide();
+
+
+  }
 /* When the user clicks on the button,
 toggle between hiding and showing the dropdown content */
 function ToggleDropdown() {

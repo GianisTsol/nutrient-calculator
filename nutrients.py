@@ -16,37 +16,41 @@ class Calculator:
         self.nutrient_size = len(self.foods[0]["nuts"])
 
     def get_nuts(self, combo):
-        buf = np.zeros(self.nutrient_size, dtype=np.float32)
-        for i in combo:
-            buf = np.add(i["nuts"], buf)  # Add food nuts to buffer
-
-        return buf
+        return sum([i["nuts"] for i in combo])
 
     def check_combo(self, combo, nuts):
-        score = 0
-
-        for i in zip(self.get_nuts(combo), nuts):
-            if i[1] >= 1:
-                score += abs(i[1] - i[0])
-        return score
+        """Returns difference of combo from user resquested values."""
+        return sum(combo - nuts)
 
     def find_best(self, wants):
-        foods = [i for i in self.foods for j in range(i["limit"])]
-        result, best = [], -100
+        foods = [
+            i
+            for i in self.foods
+            for j in range(i["limit"])
+            if self.foods.index(i) not in self.exc
+        ]
+
+        result, best = [], np.float32(-10.0)
+        indexes = np.where(wants >= 1.0)
+        wants = wants[indexes]
 
         for i in range(3, 10):
             for subset in itertools.combinations(foods, i):
-                f = 0 - self.check_combo(subset, wants)
+                f = self.check_combo(self.get_nuts(subset)[indexes], wants)
                 if f > best:
                     result, best = subset, f
                     if best > -2:
-                        return list(result)
+                        break
         return list(result)
 
-    def calculate(self, want_nuts):
+    def calculate(self, wants, except_foods=[], force_foods=[]):
+        self.exc = except_foods
+        self.incl = force_foods
         start = time.time()
 
-        result = self.find_best(want_nuts)
+        wants = np.float32(wants)
+
+        result = self.find_best(wants)
         result.sort(key=lambda x: x["name"])
 
         return {

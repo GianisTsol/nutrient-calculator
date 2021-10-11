@@ -8,112 +8,66 @@ app = Flask(__name__)
 
 app.config["UPLOAD_FOLDER"] = "static/images"
 
-nutrients = [
-    "Protein",
-    "Fat",
-    "netcarbs",
-    "sugar",
-    "fiber",
-    "saturated fat",
-    "calcium",
-    "iron",
-    "potassium K",
-    "magnesium",
-    "Phosphorous",
-    "sodium",
-    "zinc",
-    "copper",
-    "manganese",
-    "selenium",
-    "Fluorid",
-    "Iodine",
-    "Chromium",
-    "A RAE",
-    "C",
-    "ThiaminB1",
-    "riboflavinB2",
-    "niacinB3",
-    "B5",
-    "B6",
-    "biotin",
-    "folateB9",
-    "Folic acid",
-    "food folate",
-    "folate DFE",
-    "Choline",
-    "B12",
-    "Retinol",
-    "carotene beta",
-    "carotene alpha",
-    "cryptoxanthin beta",
-    "A IU",
-    "Lucopene",
-    "Lut+Zeaxanthin",
-    "E",
-    "D",
-    "DIU",
-    "D2",
-    "D3",
-    "K",
-    "Menaquinone",
-    "omega3",
-    "omega6",
-]
+nutrients_data = {
+    "Protein": "g",
+    "Fat": "g",
+    "netcarbs": "g",
+    "sugar": "g",
+    "fiber": "g",
+    "saturated fat": "g",
+    "calcium": "mg",
+    "iron": "mg",
+    "potassium K": "mg",
+    "magnesium": "mg",
+    "Phosphorous": "mg",
+    "sodium": "g",
+    "zinc": "mg",
+    "copper": "mcg",
+    "manganese": "mg",
+    "selenium": "mcg",
+    "Fluorid": "mg",
+    "Iodine": "mcg",
+    "Chromium": "mcg",
+    "A RAE": "mg",
+    "C": "mg",
+    "ThiaminB1": "mg",
+    "riboflavinB2": "mg",
+    "niacinB3": "mg",
+    "B5": "mg",
+    "B6": "mg",
+    "biotin": "mcg",
+    "folateB9": "mcg",
+    "Folic acid": "mg",
+    "food folate": "mg",
+    "folate DFE": "mg",
+    "Choline": "mg",
+    "B12": "mcg",
+    "Retinol": "mg",
+    "carotene beta": "mg",
+    "carotene alpha": "mg",
+    "cryptoxanthin beta": "mg",
+    "A IU": "mg",
+    "Lucopene": "mg",
+    "Lut+Zeaxanthin": "mg",
+    "E": "mg",
+    "D": "mcg",
+    "D IU": "mg",
+    "D2": "mg",
+    "D3": "mg",
+    "K": "mcg",
+    "Menaquinone": "mg",
+    "omega3": "mg",
+    "omega6": "mg",
+}
 
-sizes = [
-    "g",
-    "g",
-    "g",
-    "g",
-    "g",
-    "g",
-    "g",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-    "mg",
-]
 
-nutrients = [i.capitalize() for i in nutrients]
+sizes = [0]
+nutrients = []
+
+
+for i in nutrients_data.items():
+    nutrients.append(i[0])
+    sizes.append(i[1])
 
 responses = []
 foods = []
@@ -147,20 +101,23 @@ with open("foods.json", "r") as f:
 @app.route("/")
 @app.route("/index")
 def index():
-    return render_template("index.html", tags=nutrients, sizes=sizes)
+    return render_template(
+        "index.html", tags=nutrients, sizes=sizes, foods=foods
+    )
 
 
 @app.route("/data", methods=["POST", "GET"])
 def data():
     global responses
     form_data = json.loads(request.form["values"])
+    to_except = json.loads(request.form["except"])
     if len(responses) > 60:
         responses = []
     key = len(responses)
     nuts = response_to_list(form_data)
     if len(nuts) < 1:
         return "INVALID"
-    responses.append(calc.calculate(nuts))
+    responses.append(calc.calculate(nuts, except_foods=to_except))
     responses[key]["query"] = [
         (i[0], i[1] - 1) for i in zip(nutrients, nuts) if i[1] != 0
     ]
@@ -222,4 +179,4 @@ def addfood():
 if __name__ == "__main__":
     app.jinja_env.auto_reload = True
     app.config["TEMPLATES_AUTO_RELOAD"] = True
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    app.run(debug=False, use_reloader=True, host="0.0.0.0", port=5000)
