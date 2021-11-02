@@ -19,7 +19,7 @@
 <div class="center">
   <div class="pane"></div>
   <header>
-      <h4>MAKE YOUR DIET</h4>
+      <h4>MAKE YOUR DIET/MEAL</h4>
       <h2>Diet Nutrient Calculator</h2>
       <div>
         <img src="static/content/98017.png"></img>
@@ -32,12 +32,13 @@
       <div id="input-default" style="display:none" class="num-input">
         <h2>NAME</h2>
         <button class="delete-btn">X</button>
-        <input type="text" class="param-input" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');">
+        <input type="text" placeholder="Amount" class="param-input" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');">
+        <input type="text" placeholder="Priority" class="param-input" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');">
       </div>
       <div class="dropdown" id="drop">
         <button onclick="ToggleDropdown()" class="dropbtn">+</button>
         <div id="myDropdown" class="dropdown-content">
-          <input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()" style="position: relative;">
+          <input type="text" placeholder="Search.." class="search" onkeyup="filterFunction()" style="position: relative;">
           {% for i in tags %}
             <a href="#" id="option-{{ tags.index(i) }}" onclick="addParam({{ tags.index(i) }})">{{ i }} ({{ sizes[loop.index] }})</a>
           {% endfor %}
@@ -50,6 +51,8 @@
       <span class="checkmark"></span>
     </label>
     <div class="container" id="opts" style="display: none;">
+
+      <button id="fill-daily" class="option-button">Auto-fill daily requirements</button>
       <div class="fooddrop">
         <span class="adv-h">Foods not to include</span>
 
@@ -59,14 +62,9 @@
         </div>
 
         <div id="ex-foods" class="foodContainer">
-          <button id="foodadd" onclick="ToggleFoodDropdown(0)" class="dropbtn foodbtn">+</button>
-        </div>
-        <span class="adv-h">Foods to force-include</span>
-        <div id="in-foods" class="foodContainer">
-          <button id="foodadd" onclick="ToggleFoodDropdown(1)" class="dropbtn foodbtn">+</button>
+          <button id="foodadd" onclick="ToggleFoodDropdown(0)" class="dropbtn">+</button>
         </div>
         <div id="food-dropdown" class="dropdown-content">
-          <input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()" style="position: relative;">
           {% for i in foods %}
             <a href="#" id="food-{{ foods.index(i) }}" onclick="addFood({{ foods.index(i) }})">{{ i['name'] }}</a>
           {% endfor %}

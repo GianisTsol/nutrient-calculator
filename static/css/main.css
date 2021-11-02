@@ -63,7 +63,7 @@
   100% { transform: rotate(360deg); }
 }
 
-#myInput {
+.search {
   box-sizing: border-box;
   background-image: url('../searchicon.png');
   background-position: 14px 12px;
@@ -74,7 +74,7 @@
   border-bottom: 1px solid #ddd;
 }
 
-#myInput:focus {outline: 3px solid #ddd;}
+.search:focus {outline: 3px solid #ddd;}
 
 .dropdown {
   position: relative;
@@ -244,7 +244,7 @@ header div img{
 
 /* When the checkbox is checked, add a blue background */
 .container input:checked ~ .checkmark {
-  background-color: #2196F3;
+  background-color: #328ba8;
 }
 
 
@@ -283,9 +283,9 @@ header div img{
 .foodDisp {
   height: 50px;
   padding: 0.1rem;
-  background-color: #478eff;
+  background-color: rgba(125, 125, 125, 0.8);
   border-radius: 5px;
-  border: solid 1px #2177ff;
+  border: solid 1px black;
   font-size: 10px;
   flex-grow: 0;
 }
@@ -309,4 +309,14 @@ header div img{
 }
 
 .fooddrop{
+}
+
+.option-button {
+  background-color: rgba(125, 125, 125, 0.8);
+  border: 1px solid black;
+  border-radius: 3px;
+  margin-bottom: 0.6rem;
+  margin-left: 0.5rem;
+  height: 2rem;
+  cursor: pointer;
 }

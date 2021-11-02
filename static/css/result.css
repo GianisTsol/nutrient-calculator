@@ -19,7 +19,7 @@
 
 #panel img{
   max-width:100%;
-max-height:80%;
+  max-height:80%;
 }
 
 table{
@@ -47,4 +47,21 @@ span.qval{
 .qlist{
   margin-top: -1px;
   margin-bottom: 20px;
+}
+
+button {
+  background-color: #328ba8;
+  color: white;
+  padding: 4px;
+  padding-left: 18px;
+  text-align: left;
+  font-size: 16px;
+  border: 2px solid white;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 150px;
+  height: 30px;
+  margin: 10px;
+  margin-left: 0px;
+  outline: none;
 }

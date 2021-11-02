@@ -1,81 +1,75 @@
 import json
 from flask import Flask, render_template, request, redirect, url_for
 from nutrients import Calculator
-from decouple import config
-import os
 
 app = Flask(__name__)
 
 app.config["UPLOAD_FOLDER"] = "static/images"
 
 nutrients_data = {
-    "Protein": "g",
-    "Fat": "g",
-    "netcarbs": "g",
-    "sugar": "g",
-    "fiber": "g",
-    "saturated fat": "g",
-    "calcium": "mg",
-    "iron": "mg",
-    "potassium K": "mg",
-    "magnesium": "mg",
-    "Phosphorous": "mg",
-    "sodium": "g",
-    "zinc": "mg",
-    "copper": "mcg",
-    "manganese": "mg",
-    "selenium": "mcg",
-    "Fluorid": "mg",
-    "Iodine": "mcg",
-    "Chromium": "mcg",
-    "A RAE": "mg",
-    "C": "mg",
-    "ThiaminB1": "mg",
-    "riboflavinB2": "mg",
-    "niacinB3": "mg",
-    "B5": "mg",
-    "B6": "mg",
-    "biotin": "mcg",
-    "folateB9": "mcg",
-    "Folic acid": "mg",
-    "food folate": "mg",
-    "folate DFE": "mg",
-    "Choline": "mg",
-    "B12": "mcg",
-    "Retinol": "mg",
-    "carotene beta": "mg",
-    "carotene alpha": "mg",
-    "cryptoxanthin beta": "mg",
-    "A IU": "mg",
-    "Lucopene": "mg",
-    "Lut+Zeaxanthin": "mg",
-    "E": "mg",
-    "D": "mcg",
-    "D IU": "mg",
-    "D2": "mg",
-    "D3": "mg",
-    "K": "mcg",
-    "Menaquinone": "mg",
-    "omega3": "mg",
-    "omega6": "mg",
+    "Protein": ["g", 1],
+    "Fat": ["g", 1],
+    "netcarbs": ["g", 1],
+    "sugar": ["g", 1],
+    "fiber": ["g", 1],
+    "saturated fat": ["g", 1],
+    "calcium": ["mg", 0.1],
+    "iron": ["mg", 1],
+    "potassium K": ["mg", 1],
+    "magnesium": ["mg", 1],
+    "Phosphorous": ["mg", 1],
+    "sodium": ["g", 1],
+    "zinc": ["mg", 1],
+    "copper": ["mg", 1],
+    "manganese": ["mg", 1],
+    "selenium": ["mcg", 1],
+    "Fluorid": ["mg", 1],
+    "Iodine": ["mcg", 1],
+    "Chromium": ["mcg", 1],
+    "A RAE": ["mg", 1],
+    "C": ["mg", 1],
+    "ThiaminB1": ["mg", 1],
+    "riboflavinB2": ["mg", 1],
+    "niacinB3": ["mg", 1],
+    "B5": ["mg", 1],
+    "B6": ["mg", 1],
+    "biotin": ["mcg", 1],
+    "folateB9": ["mcg", 1],
+    "Folic acid": ["mg", 1],
+    "food folate": ["mg", 1],
+    "folate DFE": ["mg", 1],
+    "Choline": ["mg", 1],
+    "B12": ["mcg", 1],
+    "Retinol": ["mg", 1],
+    "carotene beta": ["mg", 1],
+    "carotene alpha": ["mg", 1],
+    "cryptoxanthin beta": ["mg", 1],
+    "A IU": ["mg", 1],
+    "Lucopene": ["mg", 1],
+    "Lut+Zeaxanthin": ["mg", 1],
+    "E": ["mg", 1],
+    "D": ["mcg", 1],
+    "D IU": ["mg", 1],
+    "D2": ["mg", 1],
+    "D3": ["mg", 1],
+    "K": ["mcg", 1],
+    "Menaquinone": ["mg", 1],
+    "omega3": ["mg", 1],
+    "omega6": ["mg", 1],
 }
 
 
 sizes = [0]
 nutrients = []
-
+priorities = []
 
 for i in nutrients_data.items():
     nutrients.append(i[0])
-    sizes.append(i[1])
+    sizes.append(i[1][0])
+    priorities.append(i[1][1])
 
 responses = []
 foods = []
-
-tokens = [config("DIET_KEY")]
-
-
-calc = Calculator()
 
 
 def response_to_list(r):
@@ -95,7 +89,6 @@ def response_to_list(r):
 
 with open("foods.json", "r") as f:
     foods = json.load(f)
-    calc.load_foods(foods)
 
 
 @app.route("/")
@@ -110,6 +103,8 @@ def index():
 def data():
     global responses
     form_data = json.loads(request.form["values"])
+    prios = json.loads(request.form["prios"])
+    prios = response_to_list(prios)
     to_except = json.loads(request.form["except"])
     if len(responses) > 60:
         responses = []
@@ -117,10 +112,16 @@ def data():
     nuts = response_to_list(form_data)
     if len(nuts) < 1:
         return "INVALID"
-    responses.append(calc.calculate(nuts, except_foods=to_except))
-    responses[key]["query"] = [
-        (i[0], i[1] - 1) for i in zip(nutrients, nuts) if i[1] != 0
-    ]
+
+    calc = Calculator()
+    calc.load_foods(foods, prios)
+    res = calc.calculate(nuts, except_foods=to_except)
+    if len(res["foods"]) == 0:
+        return str(-1)
+    responses.append(res)
+    query = [(i[0], i[1] - 1) for i in zip(nutrients, nuts) if i[1] != 0]
+    responses[key]["query"] = query
+
     return str(key)
 
 
@@ -128,6 +129,8 @@ def data():
 def result():
     global responses
     data = request.args
+    if int(data["id"]) == -1:
+        return render_template("noresult.html")
     try:
         resp = responses[int(data["id"])]
     except (ValueError, IndexError):
@@ -136,44 +139,15 @@ def result():
     for i in foods:
         i["qtty"] = foods.count(i)
     foods = [i for n, i in enumerate(foods) if i not in foods[n + 1 :]]
-
     return render_template(
         "result.html",
         nuts=list(zip(nutrients, resp["nutrients"])),
+        sizes=nutrients_data,
         foods=foods,
         query=resp["query"],
         time=resp["time"],
+        likeness=resp["likeness"],
     )
-
-
-@app.route("/addfood", methods=["POST", "GET"])
-def addfood():
-    filename = "demo.png"
-    if request.method == "POST":
-        form_data = request.form
-        if form_data["auth"] in tokens:
-            if "file" in request.files:
-                file = request.files["file"]
-                if file.filename != "":
-                    file.save(
-                        os.path.join(app.config["UPLOAD_FOLDER"], file.filename)
-                    )
-                    filename = file.filename
-
-            n = {"name": form_data["name"], "limit": int(form_data["limit"])}
-            n["nuts"] = response_to_list(form_data)
-            n["image"] = filename
-            foods.append(n)
-
-            with open("foods.json", "w") as f:
-                json.dump(foods, f)
-            calc.load_foods(foods)
-
-            return "gamiesai <3 alla ok to evala"
-        else:
-            return "No no fuck you. Unauthorized."
-    else:
-        return render_template("addfood.html", tags=nutrients)
 
 
 if __name__ == "__main__":
