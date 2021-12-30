@@ -11,3 +11,4 @@ and generates a match that provides them with said nutrition.
   `pip install -r requirements.txt`
   Then:
    `python app.py`
+And then go with your browser to `localhost:5000`
