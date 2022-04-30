@@ -23,15 +23,18 @@ class Calculator:
                 if j not in self.nutrients:
                     self.nutrients.append(j)
                     self.units.append(i["nuts"][j]["unit"])
-            foods.append(i)
+            foods.append(i.copy())
+        self.nutrients, self.units = zip(*sorted(zip(self.nutrients, self.units)))
 
+        print(self.nutrients, self.units)
         for i in foods:
+            newnuts = []
             for j in self.nutrients:
                 if j not in i["nuts"]:
                     i["nuts"][j] = {"value": 0, "unit": "g"}
 
-            nuts = [i["nuts"][k]["value"] for k in list(i["nuts"].keys())]
-            i["nuts"] = np.float32(nuts)
+            nuts = [i["nuts"][k]["value"] for k in self.nutrients]
+            i["nuts"] = np.float32(nuts) / 10
             self.foods.append(i)
 
         self.nutrient_size = len(self.foods[0]["nuts"])

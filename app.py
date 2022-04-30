@@ -23,6 +23,14 @@ for i in foods:
             sizes.append(i["nuts"][j]["unit"])
             priorities.append(1)
 
+for i in foods:
+    for j in list(i["nuts"].keys()):
+        if j not in nutrients:
+            nutrients.append(j)
+            sizes.append(i["nuts"][j]["unit"])
+            priorities.append(1)
+nutrients, sizes = zip(*sorted(zip(nutrients, sizes)))
+
 
 def response_to_list(r):
     buf = []
