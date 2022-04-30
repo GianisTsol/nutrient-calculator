@@ -11,13 +11,29 @@ class Calculator:
         self.nutrient_size = 0
         self.priorities = np.array([])
         self.factors = []
+        self.nutrients = []
+        self.units = []
 
     def load_foods(self, f, p):
         self.foods = []
+        foods = []
         self.priorities = np.int64(p)
         for i in f:
-            i["nuts"] = np.float32(i["nuts"]).dot(i["mult"])
+            for j in list(i["nuts"].keys()):
+                if j not in self.nutrients:
+                    self.nutrients.append(j)
+                    self.units.append(i["nuts"][j]["unit"])
+            foods.append(i)
+
+        for i in foods:
+            for j in self.nutrients:
+                if j not in i["nuts"]:
+                    i["nuts"][j] = {"value": 0, "unit": "g"}
+
+            nuts = [i["nuts"][k]["value"] for k in list(i["nuts"].keys())]
+            i["nuts"] = np.float32(nuts)
             self.foods.append(i)
+
         self.nutrient_size = len(self.foods[0]["nuts"])
 
     def get_nuts(self, combo):
@@ -29,10 +45,7 @@ class Calculator:
 
     def find_best(self, wants):
         foods = [
-            i
-            for i in self.foods
-            for j in range(i["limit"])
-            if self.foods.index(i) not in self.exc
+            i for i in self.foods for j in range(i["limit"]) if self.foods.index(i) not in self.exc
         ]
         indexes = np.where(wants > 1)
         wants = wants[indexes]
@@ -44,16 +57,12 @@ class Calculator:
 
         wants /= wants / self.priorities[indexes]
 
-        nullfood = {
-            "nuts": np.float32([0 for i in range(len(foods[0]["nuts"]))])
-        }
+        nullfood = {"nuts": np.float32([0 for i in range(len(self.nutrients))])}
         result = [nullfood]
 
         best_food = None
         best_score = np.inf
-        combo_score = self.check_combo(
-            self.get_nuts(result)[indexes] / factors, wants
-        )
+        combo_score = self.check_combo(self.get_nuts(result)[indexes] / factors, wants)
 
         while 1:
             for i in foods:
@@ -89,7 +98,7 @@ class Calculator:
         score, result = self.find_best(wants)
 
         result.sort(key=lambda x: x["name"])
-
+        print(result)
         return {
             "foods": result,
             "nutrients": self.get_nuts(result),

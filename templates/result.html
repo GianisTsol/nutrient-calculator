@@ -20,7 +20,7 @@
       {% for n in query %}
       <li>
           <span class="qname">{{ n[0] }}:</span>
-          <span class="qval">{{ n[1] }} {{ sizes[n[0]][0] }}</span>
+          <span class="qval">{{ n[1] }} </span>
       </li>
       {% endfor %}
     </ul>
@@ -42,7 +42,7 @@
       <tr>
           <td>{{ n[0] }}</td>
           <td>{{ n[1]|round(1) }}</td>
-          <td>{{ sizes[n[0]][0] }}</td>
+          <td></td>
       </tr>
       {% endfor %}
     </table>

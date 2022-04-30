@@ -6,70 +6,22 @@ app = Flask(__name__)
 
 app.config["UPLOAD_FOLDER"] = "static/images"
 
-nutrients_data = {
-    "Protein": ["g", 1],
-    "Fat": ["g", 1],
-    "netcarbs": ["g", 1],
-    "sugar": ["g", 1],
-    "fiber": ["g", 1],
-    "saturated fat": ["g", 1],
-    "calcium": ["mg", 0.1],
-    "iron": ["mg", 1],
-    "potassium K": ["mg", 1],
-    "magnesium": ["mg", 1],
-    "Phosphorous": ["mg", 1],
-    "sodium": ["g", 1],
-    "zinc": ["mg", 1],
-    "copper": ["mg", 1],
-    "manganese": ["mg", 1],
-    "selenium": ["mcg", 1],
-    "Fluorid": ["mg", 1],
-    "Iodine": ["mcg", 1],
-    "Chromium": ["mcg", 1],
-    "A RAE": ["mg", 1],
-    "C": ["mg", 1],
-    "ThiaminB1": ["mg", 1],
-    "riboflavinB2": ["mg", 1],
-    "niacinB3": ["mg", 1],
-    "B5": ["mg", 1],
-    "B6": ["mg", 1],
-    "biotin": ["mcg", 1],
-    "folateB9": ["mcg", 1],
-    "Folic acid": ["mg", 1],
-    "food folate": ["mg", 1],
-    "folate DFE": ["mg", 1],
-    "Choline": ["mg", 1],
-    "B12": ["mcg", 1],
-    "Retinol": ["mg", 1],
-    "carotene beta": ["mg", 1],
-    "carotene alpha": ["mg", 1],
-    "cryptoxanthin beta": ["mg", 1],
-    "A IU": ["mg", 1],
-    "Lucopene": ["mg", 1],
-    "Lut+Zeaxanthin": ["mg", 1],
-    "E": ["mg", 1],
-    "D": ["mcg", 1],
-    "D IU": ["mg", 1],
-    "D2": ["mg", 1],
-    "D3": ["mg", 1],
-    "K": ["mcg", 1],
-    "Menaquinone": ["mg", 1],
-    "omega3": ["mg", 1],
-    "omega6": ["mg", 1],
-}
-
-
 sizes = [0]
 nutrients = []
 priorities = []
-
-for i in nutrients_data.items():
-    nutrients.append(i[0])
-    sizes.append(i[1][0])
-    priorities.append(i[1][1])
-
 responses = []
-foods = []
+
+with open("foods.json", "r") as f:
+    foods = json.load(f)
+
+
+for i in foods:
+    # print(type(i["nuts"]))
+    for j in list(i["nuts"].keys()):
+        if j not in nutrients:
+            nutrients.append(j)
+            sizes.append(i["nuts"][j]["unit"])
+            priorities.append(1)
 
 
 def response_to_list(r):
@@ -87,16 +39,10 @@ def response_to_list(r):
     return buf
 
 
-with open("foods.json", "r") as f:
-    foods = json.load(f)
-
-
 @app.route("/")
 @app.route("/index")
 def index():
-    return render_template(
-        "index.html", tags=nutrients, sizes=sizes, foods=foods
-    )
+    return render_template("index.html", tags=nutrients, sizes=sizes, foods=foods)
 
 
 @app.route("/data", methods=["POST", "GET"])
@@ -142,7 +88,7 @@ def result():
     return render_template(
         "result.html",
         nuts=list(zip(nutrients, resp["nutrients"])),
-        sizes=nutrients_data,
+        sizes=sizes,
         foods=foods,
         query=resp["query"],
         time=resp["time"],
