@@ -38,7 +38,7 @@
       <div class="dropdown" id="drop">
         <button onclick="ToggleDropdown()" class="dropbtn">+</button>
         <div id="myDropdown" class="dropdown-content">
-          <input type="text" placeholder="Search.." class="search" onkeyup="filterFunction()" style="position: relative;">
+          <input type="text" placeholder="Search.." class="search" onkeyup="filterFunction()" style="position: relative;" id="myInput">
           {% for i in tags %}
             <a href="#" id="option-{{ tags.index(i) }}" onclick="addParam({{ tags.index(i) }})">{{ i }} ({{ sizes[i] }})</a>
           {% endfor %}
