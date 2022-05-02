@@ -40,7 +40,7 @@
         <div id="myDropdown" class="dropdown-content">
           <input type="text" placeholder="Search.." class="search" onkeyup="filterFunction()" style="position: relative;">
           {% for i in tags %}
-            <a href="#" id="option-{{ tags.index(i) }}" onclick="addParam({{ tags.index(i) }})">{{ i }} ({{ sizes[loop.index] }})</a>
+            <a href="#" id="option-{{ tags.index(i) }}" onclick="addParam({{ tags.index(i) }})">{{ i }} ({{ sizes[i] }})</a>
           {% endfor %}
         </div>
       </div>

@@ -6,9 +6,8 @@ app = Flask(__name__)
 
 app.config["UPLOAD_FOLDER"] = "static/images"
 
-sizes = [0]
+sizes = {}
 nutrients = []
-priorities = []
 responses = []
 
 with open("foods.json", "r") as f:
@@ -16,20 +15,12 @@ with open("foods.json", "r") as f:
 
 
 for i in foods:
-    # print(type(i["nuts"]))
     for j in list(i["nuts"].keys()):
         if j not in nutrients:
             nutrients.append(j)
-            sizes.append(i["nuts"][j]["unit"])
-            priorities.append(1)
+            sizes[j] = i["nuts"][j]["unit"]
 
-for i in foods:
-    for j in list(i["nuts"].keys()):
-        if j not in nutrients:
-            nutrients.append(j)
-            sizes.append(i["nuts"][j]["unit"])
-            priorities.append(1)
-nutrients, sizes = zip(*sorted(zip(nutrients, sizes)))
+nutrients = sorted(nutrients)
 
 
 def response_to_list(r):
