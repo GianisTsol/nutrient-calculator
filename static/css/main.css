@@ -149,8 +149,8 @@
 
 .center {
   margin: auto;
-  width: 50%;
-  width: fit-content;
+  width: 90%;
+  /*width: fit-content;*/
   padding: 10px;
   text-align: center;
   background-color: #b5b5b5;
@@ -168,7 +168,7 @@
 
 @media only screen and (max-device-width: 1100px) {
   .center {
-    width: 90%;
+    width: 95%;
   }
 }
 
