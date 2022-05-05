@@ -27,7 +27,7 @@
     {% for food in foods %}
     <div id="panel">
       <img src="static/images/{{ food['image'] }}"/>
-      <span>{{ food['name'] }} x{{ food['qtty'] }}</span>
+      <span>{{ food['name'] }} {{ food['qtty'] }}g</span>
     </div>
     {% endfor %}
 

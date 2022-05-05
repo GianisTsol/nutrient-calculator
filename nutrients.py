@@ -34,6 +34,7 @@ class Calculator:
                     i["nuts"][j] = {"value": 0, "unit": "g"}
 
             nuts = [i["nuts"][k]["value"] for k in self.nutrients]
+            # TODO: customize food serving sizes
             i["nuts"] = np.float32(nuts) / 10
             self.foods.append(i)
 
@@ -100,6 +101,10 @@ class Calculator:
 
         score, result = self.find_best(wants)
 
+        for i in result:
+            # TODO: change w seving size
+            for j in i["nuts"]:
+                j *= 10
         result.sort(key=lambda x: x["name"])
         print(result)
         return {
