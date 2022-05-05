@@ -2,7 +2,10 @@ import json
 
 
 # Get the average and put it in a new nutrient
-AVG = [("Carbohydrates", ("Carbohydrate, by difference", "Carbohydrate, by summation"))]
+AVG = [
+    ("Carbohydrates", ("Carbohydrate, by difference", "Carbohydrate, by summation")),
+    ("Calories", ("Energy (Atwater General Factors)", "Energy (Atwater Specific Factors)")),
+]
 
 with open("foods.json", "r") as f:
     foods = json.load(f)

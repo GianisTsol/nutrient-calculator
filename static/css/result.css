@@ -14,7 +14,8 @@
 
 #panel:hover {
   border: 4px solid #297293;
-  margin-bottom: 6px;
+  margin-bottom: -4px;
+  margin-left: 8px;
 }
 
 #panel img{
@@ -23,18 +24,46 @@
 }
 
 table{
-  border:1px solid black;
+  border-collapse: collapse;
+  border-spacing: 0;
 }
 
 td{
+  padding: 5px;
   text-align: center;
-  text-decoration-color: grey;
 }
 
 th{
-  padding: -1px;
-  border: 2px solid black;
+  background-color: #5be4db;
+  padding: 10px;
 }
+
+th:first-child, td:first-child {
+  text-align: left;
+}
+
+tr:nth-child(odd) {
+  background-color: #83dcf2;
+}
+
+/* border radius stuff */
+
+table tr:last-child td:first-child {
+    border-bottom-left-radius: 10px;
+}
+
+table tr:last-child td:last-child {
+    border-bottom-right-radius: 10px;
+}
+
+table th:first-child {
+    border-top-left-radius: 10px;
+}
+
+table th:last-child {
+    border-top-right-radius: 10px;
+}
+
 
 span.qval{
   font-weight: bold;
