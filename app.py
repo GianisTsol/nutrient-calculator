@@ -82,7 +82,7 @@ def result():
         return redirect(url_for("index"))
     foods = resp["foods"]
     for i in foods:
-        i["qtty"] = foods.count(i)
+        i["qtty"] = foods.count(i) * 10  # TODO: serving size related
     foods = [i for n, i in enumerate(foods) if i not in foods[n + 1 :]]
     return render_template(
         "result.html",

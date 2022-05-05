@@ -101,10 +101,6 @@ class Calculator:
 
         score, result = self.find_best(wants)
 
-        for i in result:
-            # TODO: change w seving size
-            for j in i["nuts"]:
-                j *= 10
         result.sort(key=lambda x: x["name"])
         print(result)
         return {
