@@ -128,7 +128,7 @@ class Calculator:
 
         wants = np.int64(wants).astype(np.float32)
 
-        score, result = self.find_best(wants, result)
+        score, result = self.find_best(wants)
 
         result.sort(key=lambda x: x["name"])
         return {
