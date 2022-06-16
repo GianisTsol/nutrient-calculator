@@ -120,6 +120,10 @@ class Calculator:
                 break
         ###################################
         result.remove(nullfood)
+
+        for i in result:
+            i["nuts"] = {}
+
         return combo_score, result
 
     def calculate(self, wants, except_foods=[]):
@@ -128,9 +132,13 @@ class Calculator:
 
         wants = np.int64(wants).astype(np.float32)
 
-        score, result = self.find_best(wants)
+        result = []
+        for i in range(0, 3):
+            if result is not None:
+                score, result = self.find_best(wants, result)
+            else:
+                score, result = self.find_best(wants)
 
-        print(result)
         result.sort(key=lambda x: x["name"])
         return {
             "foods": result,

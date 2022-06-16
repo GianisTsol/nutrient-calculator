@@ -24,12 +24,14 @@
       </li>
       {% endfor %}
     </ul>
-    {% for food in foods %}
-    <div id="panel">
-      <img src="static/images/{{ food['image'] }}"/>
-      <span>{{ food['name'] }} {{ food['qtty'] }}g</span>
+    <div class="panel-container">
+      {% for food in foods %}
+      <div id="panel">
+        <img src="static/images/{{ food['image'] }}"/>
+        <span>{{ food['name'] }} {{ food['qtty'] }}g</span>
+      </div>
+      {% endfor %}
     </div>
-    {% endfor %}
 
     <h2>Nutritional data</h2>
     <table>

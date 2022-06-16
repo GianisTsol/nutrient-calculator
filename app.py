@@ -23,7 +23,7 @@ for i in foods:
         if j not in nutrients:
             nutrients.append(j)
             sizes[j] = i["nuts"][j]["unit"]
-
+    i["image"] = i["name"].replace(" ", "") + ".jpg"
 for i in nutrients:
     if i not in order:
         order.append(i)
