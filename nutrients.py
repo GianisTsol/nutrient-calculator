@@ -14,19 +14,19 @@ class Calculator:
         self.nutrients = []
         self.units = []
 
-    def load_foods(self, f, p):
+    def load_foods(self, f, p, order):
         self.foods = []
         foods = []
         self.priorities = np.int64(p)
         for i in f:
-            for j in list(i["nuts"].keys()):
-                if j not in self.nutrients:
-                    self.nutrients.append(j)
-                    self.units.append(i["nuts"][j]["unit"])
+            for k in order:
+                for j in list(i["nuts"].keys()):
+                    if k == j and k not in self.nutrients:
+                        self.nutrients.append(j)
+                        self.units.append(i["nuts"][j]["unit"])
             foods.append(i.copy())
-        self.nutrients, self.units = zip(*sorted(zip(self.nutrients, self.units)))
+        # self.nutrients, self.units = zip(*sorted(zip(self.nutrients, self.units)))
 
-        print(self.nutrients, self.units)
         for i in foods:
             newnuts = []
             for j in self.nutrients:
@@ -47,27 +47,29 @@ class Calculator:
         """Returns difference of combo from user resquested values."""
         return sum(npabs(combo - nuts))
 
-    def find_best(self, wants):
-        foods = [
-            i for i in self.foods for j in range(i["limit"]) if self.foods.index(i) not in self.exc
-        ]
+    def find_best(self, wants, result=[]):
         indexes = np.where(wants > 1)
         wants = wants[indexes]
 
-        factors = wants.copy() / self.priorities[indexes]
+        foods = [
+            i for i in self.foods for j in range(i["limit"]) if self.foods.index(i) not in self.exc
+        ]
 
-        print(factors.shape)
-        print(wants.shape)
+        factors = wants.copy() / self.priorities[indexes]
 
         wants /= wants / self.priorities[indexes]
 
+        ########################################
         nullfood = {"nuts": np.float32([0 for i in range(len(self.nutrients))])}
-        result = [nullfood]
+        result += [nullfood]
 
         best_food = None
         best_score = np.inf
         combo_score = self.check_combo(self.get_nuts(result)[indexes] / factors, wants)
 
+        #################################
+        # ADD FOODS THAT INCREASE SCORE #
+        #################################
         while 1:
             for i in foods:
                 new_combo = result + [i]
@@ -90,6 +92,33 @@ class Calculator:
                 best_score = np.inf
             else:
                 break
+        ####################################
+        # REMOVE FOODS THAT DECREASE SCORE #
+        ####################################
+        while 1:
+            best_food = None
+            for i in result:
+                new_combo = result.copy()
+                del new_combo[new_combo.index(i)]
+                new_combo_score = self.check_combo(
+                    self.get_nuts(new_combo)[indexes] / factors,
+                    wants,
+                )
+                if new_combo_score < combo_score:
+                    if best_score > new_combo_score:
+                        best_score = new_combo_score
+                        best_food = i
+            if best_food is not None:
+                result.remove(best_food)
+                combo_score = self.check_combo(
+                    self.get_nuts(result)[indexes] / factors,
+                    wants,
+                )
+                best_food = None
+                best_score = np.inf
+            else:
+                break
+        ###################################
         del result[0]  # remove nullfood
         return combo_score, result
 
@@ -99,10 +128,9 @@ class Calculator:
 
         wants = np.int64(wants).astype(np.float32)
 
-        score, result = self.find_best(wants)
+        score, result = self.find_best(wants, result)
 
         result.sort(key=lambda x: x["name"])
-        print(result)
         return {
             "foods": result,
             "nutrients": self.get_nuts(result),

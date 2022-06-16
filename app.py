@@ -14,13 +14,21 @@ with open("foods.json", "r") as f:
     foods = json.load(f)
 
 
+with open("order.txt", "r") as f:
+    order = f.read().splitlines(keepends=False)
+
+
 for i in foods:
     for j in list(i["nuts"].keys()):
         if j not in nutrients:
             nutrients.append(j)
             sizes[j] = i["nuts"][j]["unit"]
 
-nutrients = sorted(nutrients)
+for i in nutrients:
+    if i not in order:
+        order.append(i)
+
+nutrients = [i for i in order if i in nutrients]
 
 
 def response_to_list(r):
@@ -59,7 +67,7 @@ def data():
         return "INVALID"
 
     calc = Calculator()
-    calc.load_foods(foods, prios)
+    calc.load_foods(foods, prios, order)
     res = calc.calculate(nuts, except_foods=to_except)
     if len(res["foods"]) == 0:
         return str(-1)
