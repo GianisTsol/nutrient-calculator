@@ -66,8 +66,10 @@ def data():
     if len(nuts) < 1:
         return "INVALID"
 
+    print("LOAD")
     calc = Calculator()
     calc.load_foods(foods, prios, order)
+    print("LOADED")
     res = calc.calculate(nuts, except_foods=to_except)
     if len(res["foods"]) == 0:
         return str(-1)
@@ -89,8 +91,9 @@ def result():
     except (ValueError, IndexError):
         return redirect(url_for("index"))
     foods = resp["foods"]
-    for i in foods:
-        i["qtty"] = foods.count(i) * 10  # TODO: serving size related
+    for j in foods:
+        j["nuts"] = {}
+        j["qtty"] = len([i for i in foods if i["id"] == j["id"]]) * 10  # TODO: serving size related
     foods = [i for n, i in enumerate(foods) if i not in foods[n + 1 :]]
     return render_template(
         "result.html",
