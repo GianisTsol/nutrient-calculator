@@ -119,7 +119,7 @@ class Calculator:
             else:
                 break
         ###################################
-        del result[0]  # remove nullfood
+        result.remove(nullfood)
         return combo_score, result
 
     def calculate(self, wants, except_foods=[]):
@@ -130,6 +130,7 @@ class Calculator:
 
         score, result = self.find_best(wants)
 
+        print(result)
         result.sort(key=lambda x: x["name"])
         return {
             "foods": result,
